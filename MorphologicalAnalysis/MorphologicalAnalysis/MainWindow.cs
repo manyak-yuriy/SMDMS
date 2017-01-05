@@ -221,7 +221,7 @@ namespace MorphologicalAnalysis
             //    xArray[i] /= xArray[i].L1Norm();
 
             for (int i = 0; i < N; i++)
-
+                textBox1.Text += xArray[i].ToString("G2");
         }
     }
 }
