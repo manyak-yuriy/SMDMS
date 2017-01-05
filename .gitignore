@@ -7,6 +7,7 @@
 [Bb]in
 [Dd]ebug
 [Bb]uild/
+packages/
 *.user
 *.suo
 *.exe
