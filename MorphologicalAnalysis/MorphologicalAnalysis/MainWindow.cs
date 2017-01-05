@@ -103,6 +103,38 @@ namespace MorphologicalAnalysis
                 ++permInd;
             }
             while (permInd < totalPermCnt);
+
+            // -- all permutations generated 
+
+            permInd = 0;
+
+            // calculate column of c values
+            double[] c = new double[totalPermCnt];
+
+            while (permInd < totalPermCnt)
+            {
+                c[permInd] = 1;
+
+                for (int m = 0; m < N - 1; m++)
+                    for (int l = m + 1; l < N; l++)
+                        c[permInd] *= (cMatrix[m, l][F[m][permInd], F[l][permInd]] + 1);
+
+                permInd++;
+            }
+            // --
+
+            double[,] pMarginal = new double[N, totalPermCnt];
+
+            for (int i = 0; i < N; i++)
+                for (permInd = 0; permInd < totalPermCnt; permInd++)
+                {
+                    pMarginal[i, permInd] = c[permInd];
+
+                    for (int Find = 0; Find < N; Find++)
+                        if (Find != i)
+                            pMarginal[i, permInd] *= initP[Find][F[Find][permInd]];
+                }
+            // -- calculated marginal probs
         }
     }
 }
