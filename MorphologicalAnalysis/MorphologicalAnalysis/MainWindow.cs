@@ -135,6 +135,27 @@ namespace MorphologicalAnalysis
                             pMarginal[i, permInd] *= initP[Find][F[Find][permInd]];
                 }
             // -- calculated marginal probs
+
+            // calc normalized marginal probs inplace
+            // normlize only inside current alternatives' values
+
+            for (int i = 0; i < N; i++)
+            {
+                for (int currFValue = 0; currFValue < n[i]; currFValue++)
+                {
+                    double sum = 0;
+                    for (permInd = 0; permInd < totalPermCnt; permInd++)
+                        if (currFValue == F[i][permInd])
+                            sum += pMarginal[i, permInd];
+
+                    for (permInd = 0; permInd < totalPermCnt; permInd++)
+                        if (currFValue == F[i][permInd])
+                            pMarginal[i, permInd] /= sum;
+                }
+            }
+
+
+
         }
     }
 }
