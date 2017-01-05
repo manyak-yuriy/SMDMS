@@ -13,7 +13,7 @@ namespace MorphologicalAnalysis
 {
     public partial class MainWindow : Form
     {
-        
+
 
         public MainWindow()
         {
@@ -37,7 +37,7 @@ namespace MorphologicalAnalysis
             // i-th element is a vector of initial probabilities for i-the factor's alternatives
             Vector<double>[] initP = new Vector<double>[N];
 
-            initP[0] = V.DenseOfArray(new [] {0.3, 0.5, 0.2});
+            initP[0] = V.DenseOfArray(new[] { 0.3, 0.5, 0.2 });
             initP[1] = V.DenseOfArray(new[] { 0.4, 0.3, 0.1, 0.2 });
             initP[2] = V.DenseOfArray(new[] { 0.3, 0.7 });
 
@@ -81,7 +81,7 @@ namespace MorphologicalAnalysis
                 F[i] = new int[totalPermCnt];
                 F[i][0] = 0;
             }
-                
+
 
             int permInd = 1;
             int currFIndex = N - 1;
@@ -154,7 +154,73 @@ namespace MorphologicalAnalysis
                 }
             }
 
+            // calculate P[i] matrices
 
+            Matrix<double>[] PMatrices = new Matrix<double>[N];
+
+            for (int currInd = 0; currInd < N; currInd++)
+            {
+
+                int nextInd = currInd + 1;
+
+                if (nextInd == N)
+                    nextInd = 0;
+
+                PMatrices[currInd] = Matrix<double>.Build.Dense(n[currInd], n[nextInd]);
+
+                for (int k = 0; k < n[currInd]; k++)
+                    for (int l = 0; l < n[nextInd]; l++)
+                    {
+                        PMatrices[currInd][k, l] = 0;
+
+                        permInd = 0;
+
+                        while (permInd < totalPermCnt)
+                        {
+                            if (F[currInd][permInd] == k && F[nextInd][permInd] == l)
+                                PMatrices[currInd][k, l] += pMarginal[nextInd, permInd];
+                            permInd++;
+                        }
+                    }
+
+                // -- filled the PMatrices[currInd] 
+            }
+            // -- filled all the PMatrices
+
+
+            // calculate the matrices' product
+
+            Matrix<double> P = Matrix<double>.Build.DenseIdentity(n[0], n[0]);
+
+            for (int i = 0; i < N; i++)
+                P = P * PMatrices[i];
+
+            Vector<double> x = Vector<double>.Build.Dense(n[0]);
+            x[0] = 1;
+
+            Vector<double> xNext = x;
+
+
+            // find x1 iteratively
+            do
+            {
+                x = xNext;
+                xNext = P * x;
+            } while ((x - xNext).L2Norm() > 1e-6);
+
+            Vector<double>[] xArray = new Vector<double>[N];
+
+            xArray[N - 1] = PMatrices[N - 1] * x;
+
+            for (int i = N - 2; i >= 0; i--)
+                xArray[i] = PMatrices[i] * xArray[i + 1];
+
+            // Normalize - apparently, unnecessary
+
+            //for (int i = 0; i < N; i++)
+            //    xArray[i] /= xArray[i].L1Norm();
+
+            for (int i = 0; i < N; i++)
 
         }
     }
