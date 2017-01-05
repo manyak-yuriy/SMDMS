@@ -74,12 +74,12 @@ namespace MorphologicalAnalysis
 
             // create F[i] to store permutations
 
-            Vector<int>[] F = new Vector<int>[N];
+            int[][] F = new int[N][];
 
             for (int i = 0; i < N; i++)
             {
-                F[i] = Vector<int>.Build.Dense(totalPermCnt);
-                F[i][0] = 1;
+                F[i] = new int[totalPermCnt];
+                F[i][0] = 0;
             }
                 
 
@@ -88,6 +88,7 @@ namespace MorphologicalAnalysis
 
             do
             {
+
                 for (int i = 0; i < N; i++)
                     F[i][permInd] = F[i][permInd - 1];
 
@@ -96,6 +97,8 @@ namespace MorphologicalAnalysis
                     F[currFIndex][permInd] = 0;
                     currFIndex--;
                 }
+
+                currFIndex = N - 1;
 
                 ++permInd;
             }
