@@ -237,6 +237,7 @@ namespace MorphologicalAnalysis
             // initial prob
             Vector<double>[] ppInitial = new Vector<double>[NN];
 
+            // may insert equal values here
             ppInitial[0] = Vector<double>.Build.DenseOfArray(new[] { 0.3, 0.5 });
             ppInitial[1] = Vector<double>.Build.DenseOfArray(new[] { 0.1, 0.4, 0.8 });
 
@@ -293,6 +294,8 @@ namespace MorphologicalAnalysis
                 }
 
             }
+
+            // -- calculated Rcompound - expected effectiveness for each alternative
                 
         }
     }
