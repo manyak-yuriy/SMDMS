@@ -266,7 +266,7 @@ namespace MorphologicalAnalysis
             {
                 Rcompound[i] = Vector<double>.Build.Dense(nn[i]);
 
-                for (permInd = 0; i < totalPermCnt; i++)
+                for (permInd = 0; permInd < totalPermCnt; permInd++)
                 {
                     double[] R = new double[nn[i]];
 
@@ -290,9 +290,7 @@ namespace MorphologicalAnalysis
                         Rcompound[i][j] += (R[j] / sum) * Pjoint[permInd];
                     }
 
-                    
                 }
-
 
             }
                 
