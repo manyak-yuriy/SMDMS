@@ -62,8 +62,6 @@ namespace MorphologicalAnalysis
             cMatrix[1, 2][2, 1] = -1;
 
 
-
-
             // F[i] permutations
 
 
@@ -154,6 +152,12 @@ namespace MorphologicalAnalysis
                 }
             }
 
+            // calculate joint probability for each permutation
+            double[] Pjoint = new double[totalPermCnt];
+
+            for (permInd = 0; permInd < totalPermCnt; permInd++)
+                Pjoint[permInd] = pMarginal[0, permInd] * initP[0][F[0][permInd]];
+
             // calculate P[i] matrices
 
             Matrix<double>[] PMatrices = new Matrix<double>[N];
@@ -222,6 +226,76 @@ namespace MorphologicalAnalysis
 
             for (int i = 0; i < N; i++)
                 textBox1.Text += xArray[i].ToString("G2");
+
+            // 2nd part
+
+            // number of additional factors
+            int NN = 2;
+            // number of alternatives for each factor
+            int[] nn = new int[] { 2, 3 };
+
+            // initial prob
+            Vector<double>[] ppInitial = new Vector<double>[NN];
+
+            ppInitial[0] = Vector<double>.Build.DenseOfArray(new[] { 0.3, 0.5 });
+            ppInitial[1] = Vector<double>.Build.DenseOfArray(new[] { 0.1, 0.4, 0.8 });
+
+            // cross-matrix
+
+            var crossCorrelation = new Matrix<double>[N, NN];
+
+            for (int i = 0; i < N; i++)
+                for (int j = 0; j < NN; j++)
+                    crossCorrelation[i, j] = M.Sparse(n[i], nn[j]);
+
+            // initialize one value for each submatrix
+            crossCorrelation[0, 0][0, 0] = 0.3;
+            crossCorrelation[1, 0][0, 0] = 0.1;
+            crossCorrelation[2, 0][0, 0] = 0.2;
+
+            crossCorrelation[0, 1][0, 0] = 0.8;
+            crossCorrelation[1, 1][0, 0] = 0.2;
+            crossCorrelation[2, 1][0, 0] = -0.9;
+
+            // -- initialized cross-corelation
+
+            Vector<double>[] Rcompound = new Vector<double>[NN];
+
+
+            for (int i = 0; i < NN; i++)
+            {
+                Rcompound[i] = Vector<double>.Build.Dense(nn[i]);
+
+                for (permInd = 0; i < totalPermCnt; i++)
+                {
+                    double[] R = new double[nn[i]];
+
+                    double sum = 0;
+
+                    for (int j = 0; j < nn[i]; j++)
+                    {
+
+                        R[j] = ppInitial[i][j];
+
+                        for (int m = 0; m < N; m++)
+                        {
+                            R[j] *= (1 + crossCorrelation[m, i][F[m][permInd], j]);
+                        }
+
+                        sum += R[j];
+                    }
+
+                    for (int j = 0; j < nn[i]; j++)
+                    {
+                        Rcompound[i][j] += (R[j] / sum) * Pjoint[permInd];
+                    }
+
+                    
+                }
+
+
+            }
+                
         }
     }
 }
