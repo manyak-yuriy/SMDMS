@@ -294,9 +294,9 @@ namespace MorphologicalAnalysis
                 }
 
             }
-
+  
             // -- calculated Rcompound - expected effectiveness for each alternative
-                
+              
         }
     }
 }
